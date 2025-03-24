@@ -1,0 +1,12 @@
+﻿@model AiCademy.Web.Models.Lesson
+
+<h2>Lesson Details</h2>
+<p><strong>Name:</strong> @Model.Name</p>
+@if (!string.IsNullOrEmpty(Model.FilePath))
+{
+    <p><strong>File:</strong> <a href="@Model.FilePath" target="_blank">Download</a></p>
+}
+<p><strong>Course:</strong> @Model.Course?.Title</p>
+<a asp-action="EditLesson" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-secondary">Back to Course</a>
+

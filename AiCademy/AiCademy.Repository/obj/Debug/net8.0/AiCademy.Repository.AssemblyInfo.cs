@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AiCademy.Repository")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2378ea8a74f74f45783bcdb3316638915e82bf11")]
 [assembly: System.Reflection.AssemblyProductAttribute("AiCademy.Repository")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AiCademy.Repository")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
