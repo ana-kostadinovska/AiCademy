@@ -6,5 +6,6 @@ namespace AiCademy.Web.Models.Identity
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        public ICollection<Course>? UserCourses { get; set; }
     }
 }
