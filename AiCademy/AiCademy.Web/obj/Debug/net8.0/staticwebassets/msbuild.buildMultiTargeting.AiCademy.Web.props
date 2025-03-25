@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\AiCademy.Web.props" />
-</Project>

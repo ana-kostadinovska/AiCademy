@@ -1,0 +1,16 @@
+# Build artifacts
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.vscode
+
+# NuGet packages
+packages/
+*.nupkg
+
+# Logs
+*.log
