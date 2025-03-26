@@ -5,9 +5,11 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AiCademy", "AiCademy", "{E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiCademy.Web", "AiCademy.Web\AiCademy.Web.csproj", "{5C2C7C85-319B-4EC8-97E4-CC7E6E17D107}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiCademy.Web", "AiCademy.Web\AiCademy.Web.csproj", "{5C2C7C85-319B-4EC8-97E4-CC7E6E17D107}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiCademy.Service", "AiCademy.Service\AiCademy.Service.csproj", "{69D4EFE1-8E73-4BC5-B8AA-541CE8E9112D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiCademy.Service", "AiCademy.Service\AiCademy.Service.csproj", "{69D4EFE1-8E73-4BC5-B8AA-541CE8E9112D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiCademy.Repository", "AiCademy.Repository\AiCademy.Repository.csproj", "{D56D582E-FC31-452F-9E07-32F466081590}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{69D4EFE1-8E73-4BC5-B8AA-541CE8E9112D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69D4EFE1-8E73-4BC5-B8AA-541CE8E9112D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69D4EFE1-8E73-4BC5-B8AA-541CE8E9112D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D56D582E-FC31-452F-9E07-32F466081590}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D56D582E-FC31-452F-9E07-32F466081590}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D56D582E-FC31-452F-9E07-32F466081590}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D56D582E-FC31-452F-9E07-32F466081590}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -30,6 +36,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5C2C7C85-319B-4EC8-97E4-CC7E6E17D107} = {E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}
 		{69D4EFE1-8E73-4BC5-B8AA-541CE8E9112D} = {E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}
+		{D56D582E-FC31-452F-9E07-32F466081590} = {E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11CE4B30-CCC7-48E8-A422-ABADF9C5F144}
