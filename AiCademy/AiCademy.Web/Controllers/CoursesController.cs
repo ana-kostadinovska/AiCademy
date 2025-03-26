@@ -7,22 +7,43 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AiCademy.Web.Data;
 using AiCademy.Web.Models;
+using Microsoft.AspNetCore.Identity;
+using AiCademy.Web.Models.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace AiCademy.Web.Controllers
 {
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CoursesController(ApplicationDbContext context)
+        public CoursesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Courses
         public async Task<IActionResult> Index()
         {
             return View(await _context.Courses.ToListAsync());
+        }
+
+        // GET: UserCourses
+        [Authorize]
+        public async Task<IActionResult> UserCourses()
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = await _context.Users
+                .Include(u => u.UserCourses)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+
+            return View(user?.UserCourses.ToList() ?? new List<Course>());
         }
 
         public async Task<IActionResult> Details(Guid? id)
@@ -154,6 +175,30 @@ namespace AiCademy.Web.Controllers
         private bool CourseExists(Guid id)
         {
             return _context.Courses.Any(e => e.Id == id);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCourseToUserList(Guid id)
+        {
+
+            var course = await _context.Courses.FindAsync(id);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users
+                .Include(u => u.UserCourses)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+
+            user.UserCourses ??= new List<Course>();
+
+            if (!user.UserCourses.Any(c => c.Id == id))
+            {
+                user.UserCourses.Add(course);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(UserCourses));
         }
 
         public IActionResult AddLesson(Guid courseId)

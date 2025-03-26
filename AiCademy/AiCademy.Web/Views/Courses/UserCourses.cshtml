@@ -5,13 +5,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Courses</h1>
+<h1>My Courses</h1>
 
 <div class="container">
-    <div class="m-3">
-        <a class="btn btn-success" asp-controller="Courses" asp-action="Create">Create new course</a>
-
-    </div>
 
      @for(int i=0;i<Model.Count; i++)
     {
@@ -32,15 +28,8 @@
                 <div class="card-footer">
                    <td> 
                  <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>  
-                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>  
-                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a> 
-                 @if (User.Identity.IsAuthenticated) 
-  { 
-                 <form asp-action="AddCourseToUserList" method="post"> 
-                     <input type="hidden" name="id" value="@item.Id" />
-                     <button type="submit" class="btn btn-success">Enroll</button> 
-                </form> 
-  } 
+               
+   
              </td> 
                 </div>
 
