@@ -43,7 +43,7 @@ namespace AiCademy.Web.Controllers
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
 
-            return View(user?.UserCourses ?? new List<Course>());
+            return View(user?.UserCourses.ToList() ?? new List<Course>());
         }
 
         public async Task<IActionResult> Details(Guid? id)
