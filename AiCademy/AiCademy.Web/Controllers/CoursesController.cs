@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AiCademy.Web.Data;
-using AiCademy.Web.Models;
+using AiCademy.Repository;
+using AiCademy.Domain.Models;
 using Microsoft.AspNetCore.Identity;
-using AiCademy.Web.Models.Identity;
+using AiCademy.Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 

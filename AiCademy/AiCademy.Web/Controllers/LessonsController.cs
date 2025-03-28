@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AiCademy.Web.Data;
-using AiCademy.Web.Models;
+using AiCademy.Repository;
+using AiCademy.Domain.Models;
 
 namespace AiCademy.Web.Controllers
 {

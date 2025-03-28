@@ -1,6 +1,11 @@
-﻿using AiCademy.Web.Models.Identity;
+﻿using AiCademy.Domain.Identity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace AiCademy.Web.Models
+namespace AiCademy.Domain.Models
 {
     public class Course : BaseEntity
     {

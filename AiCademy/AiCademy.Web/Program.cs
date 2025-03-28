@@ -1,7 +1,9 @@
-using AiCademy.Web.Data;
-using AiCademy.Web.Models.Identity;
+using AiCademy.Repository;
+using AiCademy.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using AiCademy.Repository.Implementation;
+using AiCademy.Repository.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,8 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddControllers();
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 var app = builder.Build();
 

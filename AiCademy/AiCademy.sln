@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiCademy.Service", "AiCadem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiCademy.Repository", "AiCademy.Repository\AiCademy.Repository.csproj", "{D56D582E-FC31-452F-9E07-32F466081590}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiCademy.Domain", "AiCademy.Domain\AiCademy.Domain.csproj", "{0E0291D4-435E-47A4-BA3F-2B05BA806638}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{D56D582E-FC31-452F-9E07-32F466081590}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D56D582E-FC31-452F-9E07-32F466081590}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D56D582E-FC31-452F-9E07-32F466081590}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E0291D4-435E-47A4-BA3F-2B05BA806638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E0291D4-435E-47A4-BA3F-2B05BA806638}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E0291D4-435E-47A4-BA3F-2B05BA806638}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E0291D4-435E-47A4-BA3F-2B05BA806638}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,6 +43,7 @@ Global
 		{5C2C7C85-319B-4EC8-97E4-CC7E6E17D107} = {E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}
 		{69D4EFE1-8E73-4BC5-B8AA-541CE8E9112D} = {E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}
 		{D56D582E-FC31-452F-9E07-32F466081590} = {E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}
+		{0E0291D4-435E-47A4-BA3F-2B05BA806638} = {E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {11CE4B30-CCC7-48E8-A422-ABADF9C5F144}
