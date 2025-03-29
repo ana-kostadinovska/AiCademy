@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AiCademy.Repository.Implementation;
 using AiCademy.Repository.Interface;
+using AiCademy.Service.Implementation;
+using AiCademy.Service.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+builder.Services.AddTransient<ICourseService, CourseServiceImpl>();
+builder.Services.AddTransient<ILessonService, LessonServiceImpl>();
 
 var app = builder.Build();
 
