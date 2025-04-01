@@ -20,3 +20,81 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+
+/* Home - Index */
+.full-width {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+.hero-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    height: 550px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.hero-content {
+    max-width: 800px;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+.btn-home {
+    background-color: #ff6200;
+    border-color: #ff6200;
+    font-weight: bold;
+    color: white;
+}
+
+.btn-home:hover {
+    background-color: #e65a00;
+    border-color: #e65a00;
+    color: white
+}
+
+.section-title {
+    color: #ff6200;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.row.text-center p {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.section-divider {
+    position: relative;
+    border-right: 2px solid #D3D3D3;
+}

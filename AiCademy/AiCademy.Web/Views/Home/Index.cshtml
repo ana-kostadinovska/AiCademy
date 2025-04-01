@@ -2,7 +2,37 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="full-width">
+    <div class="hero-section" style="background-image: url('/images/bg-img.jpg');">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Learn Skills From Our Top Instructors</h1>
+            <p>
+                Discover a world of knowledge and expertise as you embark on your learning journey with us. Our platform offers you the opportunity to learn from the best in the field, with top-tier instructors who are passionate about sharing their skills and insights.
+            </p>
+            <a class="btn btn-lg btn-home" asp-controller="Courses" asp-action="Index">
+                Explore Courses
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8" />
+                </svg>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row text-center">
+        <div class="col-md-6 section-divider">
+            <h3 class="section-title">What do we do?</h3>
+            <p>
+                At AiCademy, we provide a platform for learners to access high-quality courses taught by top instructors. Our mission is to empower individuals with the skills they need to succeed in their careers and personal growth.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <h3 class="section-title">Who are we?</h3>
+            <p>
+                We are a team of passionate educators and technologists dedicated to revolutionizing online learning. AiCademy was founded with the vision of making education accessible, engaging, and effective for everyone.
+            </p>
+        </div>
+    </div>
 </div>
