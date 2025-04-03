@@ -1,6 +1,7 @@
 ﻿using AiCademy.Domain.Models;
 using AiCademy.Repository.Interface;
 using AiCademy.Service.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,27 @@ namespace AiCademy.Service.Implementation
     public class CourseServiceImpl : ICourseService
     {
         private readonly IRepository<Course> _courseRepository;
+        private readonly IRepository<Lesson> _lessonRepository;
 
-        public CourseServiceImpl(IRepository<Course> courseRepository)
+        public CourseServiceImpl(IRepository<Course> courseRepository, IRepository<Lesson> lessonRepository)
         {
             _courseRepository = courseRepository;
+            _lessonRepository = lessonRepository;
+        }
+
+        public async Task AddLessonToCourse(Guid courseId, Lesson lesson)
+        {
+            var course = _courseRepository.Get(courseId);
+            if (course == null)
+            {
+                throw new KeyNotFoundException("Course not found");
+            }
+
+            lesson.CourseId = courseId;
+            _lessonRepository.Insert(lesson);
+
+            course.Lessons.Add(lesson);
+            _courseRepository.Update(course);
         }
 
         public Course CreateNewCourse(Course course)

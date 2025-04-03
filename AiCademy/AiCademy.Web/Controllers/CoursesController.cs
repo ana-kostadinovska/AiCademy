@@ -11,24 +11,29 @@ using Microsoft.AspNetCore.Identity;
 using AiCademy.Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using AiCademy.Service.Interface;
 
 namespace AiCademy.Web.Controllers
 {
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICourseService _courseService;
+        private readonly ILessonService _lessonService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CoursesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public CoursesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, ICourseService courseService, ILessonService lessonService)
         {
             _context = context;
             _userManager = userManager;
+            _courseService = courseService;
+            _lessonService = lessonService;
         }
 
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Courses.ToListAsync());
+            return View(_courseService.GetCourses());
         }
 
         // GET: UserCourses
@@ -53,9 +58,7 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses
-                .Include(c => c.Lessons)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var course = _courseService.GetCourseById(id);
 
             if (course == null)
             {
@@ -81,8 +84,7 @@ namespace AiCademy.Web.Controllers
             if (ModelState.IsValid)
             {
                 course.Id = Guid.NewGuid();
-                _context.Add(course);
-                await _context.SaveChangesAsync();
+                _courseService.CreateNewCourse(course);
                 return RedirectToAction(nameof(Index));
             }
             return View(course);
@@ -96,7 +98,7 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses.FindAsync(id);
+            var course = _courseService.GetCourseById(id);
             if (course == null)
             {
                 return NotFound();
@@ -118,22 +120,8 @@ namespace AiCademy.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(course);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CourseExists(course.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _courseService.UpdateCourse(course);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(course);
@@ -147,8 +135,7 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var course = _courseService.GetCourseById(id);
             if (course == null)
             {
                 return NotFound();
@@ -162,13 +149,7 @@ namespace AiCademy.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var course = await _context.Courses.FindAsync(id);
-            if (course != null)
-            {
-                _context.Courses.Remove(course);
-            }
-
-            await _context.SaveChangesAsync();
+            _courseService.DeleteCourse(id);
             return RedirectToAction(nameof(Index));
         }
 
@@ -182,7 +163,7 @@ namespace AiCademy.Web.Controllers
         public async Task<IActionResult> AddCourseToUserList(Guid id)
         {
 
-            var course = await _context.Courses.FindAsync(id);
+            var course = _courseService.GetCourseById(id);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users
@@ -216,7 +197,6 @@ namespace AiCademy.Web.Controllers
                 if (LessonFile != null && LessonFile.Length > 0)
                 {
                     var originalFileName = Path.GetFileName(LessonFile.FileName);
-
                     var fileName = Guid.NewGuid().ToString() + Path.GetExtension(LessonFile.FileName);
                     var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
 
@@ -233,8 +213,10 @@ namespace AiCademy.Web.Controllers
 
                 lesson.Id = Guid.NewGuid();
                 lesson.CourseId = courseId;
-                _context.Lessons.Add(lesson);
-                await _context.SaveChangesAsync();
+
+                
+                await _courseService.AddLessonToCourse(courseId, lesson);
+
                 return RedirectToAction("Details", new { id = courseId });
             }
 
@@ -249,7 +231,7 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var lesson = await _context.Lessons.FindAsync(id);
+            var lesson = _lessonService.GetLessonById(id);
             if (lesson == null)
             {
                 return NotFound();
@@ -297,8 +279,7 @@ namespace AiCademy.Web.Controllers
                         lesson.Name = lesson.Name.Split(" (")[0] + $" ({originalFileName})";
                     }
 
-                    _context.Update(lesson);
-                    await _context.SaveChangesAsync();
+                    _lessonService.UpdateLesson(lesson);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -323,9 +304,7 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var lesson = await _context.Lessons
-                .Include(l => l.Course)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var lesson = _lessonService.GetLessonById(id);
             if (lesson == null)
             {
                 return NotFound();
@@ -338,11 +317,10 @@ namespace AiCademy.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteLesson(Guid id)
         {
-            var lesson = await _context.Lessons.FindAsync(id);
+            var lesson = _lessonService.GetLessonById(id);
             if (lesson != null)
             {
-                _context.Lessons.Remove(lesson);
-                await _context.SaveChangesAsync();
+                _lessonService.DeleteLesson(id);
                 return RedirectToAction("Details", new { id = lesson.CourseId });
             }
             return NotFound();

@@ -7,23 +7,28 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AiCademy.Repository;
 using AiCademy.Domain.Models;
+using AiCademy.Service.Interface;
 
 namespace AiCademy.Web.Controllers
 {
     public class LessonsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILessonService _lessonService;
+        private readonly ICourseService _courseService;
 
-        public LessonsController(ApplicationDbContext context)
+        public LessonsController(ApplicationDbContext context, ILessonService lessonService, ICourseService courseService)
         {
             _context = context;
+            _lessonService = lessonService;
+            _courseService = courseService;
         }
 
         // GET: Lessons
         public async Task<IActionResult> Index()
         {
             var applicationDbContext = _context.Lessons.Include(l => l.Course);
-            return View(await applicationDbContext.ToListAsync());
+            return View(_lessonService.GetLessons());
         }
 
         // GET: Lessons/Details/5
@@ -34,9 +39,7 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var lesson = await _context.Lessons
-                .Include(l => l.Course)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var lesson = _lessonService.GetLessonById(id);
             if (lesson == null)
             {
                 return NotFound();
@@ -48,7 +51,7 @@ namespace AiCademy.Web.Controllers
         // GET: Lessons/Create
         public IActionResult Create()
         {
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Title");
+            ViewData["CourseId"] = new SelectList(_courseService.GetCourses(), "Id", "Title");
             return View();
         }
 
@@ -78,13 +81,13 @@ namespace AiCademy.Web.Controllers
                     lesson.Name += $" ({originalFileName})";
                 }
 
-                lesson.Id = Guid.NewGuid();
-                _context.Add(lesson);
-                await _context.SaveChangesAsync();
+                //lesson.Id = Guid.NewGuid();
+                //_context.Add(lesson);
+                _lessonService.CreateNewLesson(lesson);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Title", lesson.CourseId);
+            ViewData["CourseId"] = new SelectList(_courseService.GetCourses(), "Id", "Title", lesson.CourseId);
             return View(lesson);
         }
 
@@ -98,12 +101,12 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var lesson = await _context.Lessons.FindAsync(id);
+            var lesson = _lessonService.GetLessonById(id);
             if (lesson == null)
             {
                 return NotFound();
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Id", lesson.CourseId);
+            ViewData["CourseId"] = new SelectList(_courseService.GetCourses(), "Id", "Id", lesson.CourseId);
             return View(lesson);
         }
 
@@ -121,25 +124,10 @@ namespace AiCademy.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(lesson);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!LessonExists(lesson.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _lessonService.UpdateLesson(lesson);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Id", lesson.CourseId);
+            ViewData["CourseId"] = new SelectList(_courseService.GetCourses(), "Id", "Id", lesson.CourseId);
             return View(lesson);
         }
 
@@ -151,9 +139,7 @@ namespace AiCademy.Web.Controllers
                 return NotFound();
             }
 
-            var lesson = await _context.Lessons
-                .Include(l => l.Course)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var lesson = _lessonService.GetLessonById(id);
             if (lesson == null)
             {
                 return NotFound();
@@ -167,19 +153,13 @@ namespace AiCademy.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var lesson = await _context.Lessons.FindAsync(id);
-            if (lesson != null)
-            {
-                _context.Lessons.Remove(lesson);
-            }
-
-            await _context.SaveChangesAsync();
+            _lessonService.DeleteLesson(id);
             return RedirectToAction(nameof(Index));
         }
 
         private bool LessonExists(Guid id)
         {
-            return _context.Lessons.Any(e => e.Id == id);
+            return _lessonService.GetLessonById(id) != null;
         }
     }
 }

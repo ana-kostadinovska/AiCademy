@@ -14,5 +14,6 @@ namespace AiCademy.Service.Interface
         public Course CreateNewCourse(Course course);
         public Course UpdateCourse(Course course);
         public Course DeleteCourse(Guid id);
+        Task AddLessonToCourse(Guid courseId, Lesson lesson);
     }
 }
