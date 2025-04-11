@@ -36,6 +36,7 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddTransient<ICourseService, CourseServiceImpl>();
 builder.Services.AddTransient<ILessonService, LessonServiceImpl>();
+builder.Services.AddTransient<IGeminiService, GeminiServiceImpl>();
 
 var app = builder.Build();
 
