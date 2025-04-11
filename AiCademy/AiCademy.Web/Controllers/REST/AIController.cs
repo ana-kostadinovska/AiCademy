@@ -1,4 +1,5 @@
-﻿using DotNetEnv;
+﻿using AiCademy.Service.Interface;
+using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
@@ -17,46 +18,35 @@ namespace AiCademy.Web.Controllers.REST
     public class AIController : ControllerBase
     {
         private readonly HttpClient _httpClient;
+        private readonly IGeminiService _geminiService;
         private string ApiKey;
         private string ApiQuestionUrl;
         private string ApiUploadUrl;
 
-        public AIController(HttpClient httpClient)
+        public AIController(HttpClient httpClient, IGeminiService geminiService)
         {
             _httpClient = httpClient;
-            Env.Load();
-            ApiKey = Env.GetString("gemini_api_key");
-            ApiQuestionUrl = Env.GetString("gemini_api_question_url") + ApiKey;
-            ApiUploadUrl = Env.GetString("gemini_api_file_url") + ApiKey;
+            //Env.Load();
+            //ApiKey = Env.GetString("gemini_api_key");
+            //ApiQuestionUrl = Env.GetString("gemini_api_question_url") + ApiKey;
+            //ApiUploadUrl = Env.GetString("gemini_api_file_url") + ApiKey;
+            ApiKey = "";
+            ApiQuestionUrl = "";
+            ApiUploadUrl = "";
+            _geminiService = geminiService;
         }
 
         [HttpPost("ask")]
         public async Task<IActionResult> AskAI([FromBody] AIRequest request)
         {
-            var requestBody = new
+            try
             {
-                contents = new[]
-                {
-                    new
-                    {
-                        parts = new[]
-                        {
-                            new { text = request.Question }
-                        }
-                    }
-                }
-            };
-
-            var jsonContent = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync(ApiQuestionUrl, jsonContent);
-            if (!response.IsSuccessStatusCode)
+                var result = await _geminiService.SendText(request.Question);
+                return Ok(result);
+            } catch (Exception ex)
             {
-                return StatusCode((int)response.StatusCode, "Error calling AI API");
+                return StatusCode(500, ex.Message);
             }
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            return Ok(responseString);
         }
 
         // Doesn't work - Could be reworked with a python service

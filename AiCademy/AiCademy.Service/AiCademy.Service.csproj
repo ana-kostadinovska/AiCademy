@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\AiCademy.Domain\AiCademy.Domain.csproj" />
     <ProjectReference Include="..\AiCademy.Repository\AiCademy.Repository.csproj" />
   </ItemGroup>
