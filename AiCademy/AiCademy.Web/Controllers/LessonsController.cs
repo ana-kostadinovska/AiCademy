@@ -77,8 +77,12 @@ namespace AiCademy.Web.Controllers
                         await LessonFile.CopyToAsync(stream);
                     }
 
-                    lesson.FilePath = $"/uploads/{fileName}";
-                    lesson.Name += $" ({originalFileName})";
+                    lesson.PresentationUrl = $"/uploads/{fileName}";
+                    lesson.Title += $" ({originalFileName})";
+                    
+                    // OLD:
+                    //lesson.FilePath = $"/uploads/{fileName}";
+                    //lesson.Name += $" ({originalFileName})";
                 }
 
                 //lesson.Id = Guid.NewGuid();

@@ -5,6 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@* Replaced all
+Name -> Title
+FilePath -> PresentationUrl *@
+
 <h1>Index</h1>
 
 <p>
@@ -24,12 +28,12 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@item.Name</td>
+                <td>@item.Title</td>
                 <td>@item.Course.Title</td>
                 <td>
-                    @if (!string.IsNullOrEmpty(item.FilePath))
+                    @if (!string.IsNullOrEmpty(item.PresentationUrl))
                     {
-                        <a href="@item.FilePath" target="_blank">Download File</a>
+                        <a href="@item.PresentationUrl" target="_blank">Download File</a>
                     }
                     else
                     {

@@ -30,18 +30,23 @@
             @Html.DisplayFor(model => model.Course.Id)
         </dd>
     </dl> *@
+
+    @* Replaced all
+    Name -> Title
+    FilePath -> PresentationUrl *@
+
     <dl class="row">
-        <dt class="col-sm-2">Lesson Name</dt>
-        <dd class="col-sm-10">@Model.Name</dd>
+        <dt class="col-sm-2">Lesson Title</dt>
+        <dd class="col-sm-10">@Model.Title</dd>
 
         <dt class="col-sm-2">Course</dt>
         <dd class="col-sm-10">@Model.Course.Title</dd>
 
         <dt class="col-sm-2">File</dt>
         <dd class="col-sm-10">
-            @if (!string.IsNullOrEmpty(Model.FilePath))
+            @if (!string.IsNullOrEmpty(Model.PresentationUrl))
             {
-                <a href="@Model.FilePath" target="_blank">Download File</a>
+                <a href="@Model.PresentationUrl" target="_blank">Download File</a>
             }
             else
             {

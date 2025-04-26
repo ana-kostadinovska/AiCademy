@@ -4,12 +4,12 @@
 <form asp-action="AddLesson" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="CourseId" value="@ViewBag.CourseId" />
     <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
     </div>
     <div class="form-group">
-        <label asp-for="FilePath"></label>
-        <input type="file" name="LessonFile" class="form-control" />
+        <label asp-for="PresentationUrl"></label>
+        <input type="text" name="LessonUrl" class="form-control" />
     </div>
     <button type="submit" class="btn btn-success">Add</button>
 </form>
