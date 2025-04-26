@@ -12,7 +12,7 @@ namespace AiCademy.Repository
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public virtual DbSet<Course> Courses { get; set; }
+        public virtual DbSet<EnrolledCourse> Courses { get; set; }
         public virtual DbSet<Lesson> Lessons { get; set; }
         public virtual DbSet<EnrolledCourse> EnrolledCourses { get; set; }
         public virtual DbSet<Quiz> Quizzes { get; set; }

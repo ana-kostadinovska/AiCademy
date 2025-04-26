@@ -12,6 +12,7 @@ using AiCademy.Domain.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using AiCademy.Service.Interface;
+using AiCademy.Domain.Enums;
 
 namespace AiCademy.Web.Controllers
 {
@@ -44,11 +45,17 @@ namespace AiCademy.Web.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var user = await _context.Users
-                .Include(u => u.UserCourses)
+                .Include(u => u.EnrolledCourses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
+            //OLD:
+            //var user = await _context.Users
+            //    .Include(u => u.UserCourses)
+            //    .FirstOrDefaultAsync(u => u.Id == userId);
 
 
-            return View(user?.UserCourses.ToList() ?? new List<Course>());
+            return View(user?.EnrolledCourses.ToList() ?? []);
+            //OLD:
+            //return View(user?.UserCourses.ToList() ?? new List<Course>());
         }
 
         public async Task<IActionResult> Details(Guid? id)
@@ -81,6 +88,7 @@ namespace AiCademy.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description,Duration,Id")] Course course)
         {
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
             if (ModelState.IsValid)
             {
                 course.Id = Guid.NewGuid();
@@ -164,20 +172,49 @@ namespace AiCademy.Web.Controllers
         {
 
             var course = _courseService.GetCourseById(id);
+            if (course == null)
+            {
+                return NotFound("Course not found.");
+            }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users
-                .Include(u => u.UserCourses)
+                .Include(u => u.EnrolledCourses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
-
-
-            user.UserCourses ??= new List<Course>();
-
-            if (!user.UserCourses.Any(c => c.Id == id))
+            if (user == null)
             {
-                user.UserCourses.Add(course);
+                return NotFound("User not found.");
+            }
+            //OLD:
+            //var user = await _context.Users
+            //    .Include(u => u.UserCourses)
+            //    .FirstOrDefaultAsync(u => u.Id == userId);
+
+
+            //OLD:
+            //user.UserCourses ??= new List<Course>();
+
+            bool isEnrolled = user.EnrolledCourses.Any(ec => ec.CourseId == id);
+            if (!isEnrolled)
+            {
+                var enrollment = new EnrolledCourse
+                {
+                    UserId = new Guid(userId!),
+                    CourseId = id,
+                    Status = CourseStatus.Active, // Set appropriate status
+                    StartDate = DateTime.Now
+                    // EndDate remains null initially
+                };
+
+                user.EnrolledCourses.Add(enrollment);
                 await _context.SaveChangesAsync();
             }
+            //OLD:
+            //if (!user.UserCourses.Any(c => c.Id == id))
+            //{
+            //    user.UserCourses.Add(course);
+            //    await _context.SaveChangesAsync();
+            //}
 
             return RedirectToAction(nameof(UserCourses));
         }
@@ -207,8 +244,11 @@ namespace AiCademy.Web.Controllers
                         await LessonFile.CopyToAsync(stream);
                     }
 
-                    lesson.FilePath = $"/uploads/{fileName}";
-                    lesson.Name += $" ({originalFileName})";
+                    lesson.PresentationUrl = $"/uploads/{fileName}";
+                    lesson.Title += $" ({originalFileName})";
+                    // OLD:
+                    //lesson.FilePath = $"/uploads/{fileName}";
+                    //lesson.Name += $" ({originalFileName})";
                 }
 
                 lesson.Id = Guid.NewGuid();
@@ -254,14 +294,23 @@ namespace AiCademy.Web.Controllers
                 {
                     if (LessonFile != null && LessonFile.Length > 0)
                     {
-                        if (!string.IsNullOrEmpty(lesson.FilePath))
+                        if (!string.IsNullOrEmpty(lesson.PresentationUrl))
                         {
-                            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", lesson.FilePath.TrimStart('/'));
+                            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", lesson.PresentationUrl.TrimStart('/'));
                             if (System.IO.File.Exists(oldFilePath))
                             {
                                 System.IO.File.Delete(oldFilePath);
                             }
                         }
+                        // OLD:
+                        //if (!string.IsNullOrEmpty(lesson.FilePath))
+                        //{
+                        //    var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", lesson.FilePath.TrimStart('/'));
+                        //    if (System.IO.File.Exists(oldFilePath))
+                        //    {
+                        //        System.IO.File.Delete(oldFilePath);
+                        //    }
+                        //}
 
                         var originalFileName = Path.GetFileName(LessonFile.FileName);
 
@@ -275,8 +324,11 @@ namespace AiCademy.Web.Controllers
                             await LessonFile.CopyToAsync(stream);
                         }
 
-                        lesson.FilePath = $"/uploads/{fileName}";
-                        lesson.Name = lesson.Name.Split(" (")[0] + $" ({originalFileName})";
+                        lesson.PresentationUrl = $"/uploads/{fileName}";
+                        lesson.Title = lesson.Title.Split(" (")[0] + $" ({originalFileName})";
+                        // OLD:
+                        //lesson.FilePath = $"/uploads/{fileName}";
+                        //lesson.Name = lesson.Name.Split(" (")[0] + $" ({originalFileName})";
                     }
 
                     _lessonService.UpdateLesson(lesson);

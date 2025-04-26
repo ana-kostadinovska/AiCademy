@@ -5,6 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@* Replaced all
+Name -> Title
+FilePath -> PresentationUrl *@
+
 <h1>Delete</h1>
 
 <h3>Are you sure you want to delete this?</h3>
@@ -13,16 +17,16 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Title)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Title)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FilePath)
+            @Html.DisplayNameFor(model => model.PresentationUrl)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FilePath)
+            @Html.DisplayFor(model => model.PresentationUrl)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Course)

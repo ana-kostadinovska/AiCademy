@@ -6,11 +6,24 @@
     <input type="hidden" asp-for="CourseId" />
 
     <div class="form-group">
-        <label asp-for="Name"></label>
-        <input asp-for="Name" class="form-control" />
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
     </div>
 
     <div class="form-group">
+        <label for="PresentationUrl">Current Url</label>
+        @if (!string.IsNullOrEmpty(Model.PresentationUrl))
+        {
+            <p>
+                <a href="@Model.PresentationUrl" target="_blank">View Current File</a>
+            </p>
+        }
+        else
+        {
+            <p>No file uploaded.</p>
+        }
+    </div>
+    @* <div class="form-group">
         <label for="CurrentFile">Current File</label>
         @if (!string.IsNullOrEmpty(Model.FilePath))
         {
@@ -22,7 +35,7 @@
         {
             <p>No file uploaded.</p>
         }
-    </div>
+    </div> *@
 
     <div class="form-group">
         <label for="LessonFile">Upload New File</label>

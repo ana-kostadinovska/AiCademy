@@ -40,7 +40,8 @@ else
     <table class="table">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Title</th>
+                @* <th>Name</th> *@
                 <th>Actions</th>
             </tr>
         </thead>
@@ -48,7 +49,8 @@ else
             @foreach (var lesson in Model.Lessons)
             {
                 <tr>
-                    <td>@lesson.Name</td>
+                    <td>@lesson.Title</td>
+                    @* <td>@lesson.Name</td> *@
                     <td>
                         <a asp-action="LessonDetails" asp-route-id="@lesson.Id" class="btn btn-info btn-sm">Details</a>
                         <a asp-action="EditLesson" asp-route-id="@lesson.Id" class="btn btn-warning btn-sm">Edit</a>

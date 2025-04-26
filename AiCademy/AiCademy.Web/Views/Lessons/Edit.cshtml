@@ -7,6 +7,10 @@
 
 <h1>Edit</h1>
 
+@* Replaced all
+Name -> Title
+FilePath -> PresentationUrl *@
+
 <h4>Lesson</h4>
 <hr />
 <div class="row">
@@ -14,14 +18,14 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FilePath" class="control-label"></label>
-                <input asp-for="FilePath" class="form-control" />
-                <span asp-validation-for="FilePath" class="text-danger"></span>
+                <label asp-for="PresentationUrl" class="control-label"></label>
+                <input asp-for="PresentationUrl" class="form-control" />
+                <span asp-validation-for="PresentationUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CourseId" class="control-label"></label>

@@ -10,7 +10,7 @@ namespace AiCademy.Domain.Models
         public string Duration { get; set; }
 
         // Наставник (FOREIGN KEY)
-        public Guid InstructorId { get; set; }
+        public Guid? InstructorId { get; set; }
         public virtual ApplicationUser Instructor { get; set; }
 
         // Навигациски својства
