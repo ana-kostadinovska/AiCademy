@@ -32,9 +32,20 @@ namespace AiCademy.Web.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(_courseService.GetCourses());
+            var courses = _courseService.GetCourses();
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                courses = courses
+                    .Where(c => c.Title != null && c.Title.ToLower().Contains(searchString.ToLower()))
+                    .ToList();
+            }
+
+            return View(courses);
+
+            /*return View(_courseService.GetCourses());*/
         }
 
         // GET: UserCourses
