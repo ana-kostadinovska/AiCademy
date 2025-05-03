@@ -3,6 +3,7 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -20,179 +21,142 @@ namespace AiCademy.Web.Controllers.REST
         private readonly HttpClient _httpClient;
         private readonly IGeminiService _geminiService;
         private string ApiKey;
-        private string ApiQuestionUrl;
         private string ApiUploadUrl;
+        private string ApiQuestionUrl;
+        private string fileUri;
 
         public AIController(HttpClient httpClient, IGeminiService geminiService)
         {
             _httpClient = httpClient;
-            //Env.Load();
-            //ApiKey = Env.GetString("gemini_api_key");
-            //ApiQuestionUrl = Env.GetString("gemini_api_question_url") + ApiKey;
-            //ApiUploadUrl = Env.GetString("gemini_api_file_url") + ApiKey;
-            ApiKey = "";
-            ApiQuestionUrl = "";
-            ApiUploadUrl = "";
+            Env.Load();
+            ApiKey = Env.GetString("gemini_api_key");
+            ApiUploadUrl = Env.GetString("gemini_api_file_url") + "?key=" + ApiKey;
+            ApiQuestionUrl = Env.GetString("gemini_api_question_url") + ApiKey;
             _geminiService = geminiService;
+            fileUri = "";
         }
 
-        [HttpPost("ask")]
-        public async Task<IActionResult> AskAI([FromBody] AIRequest request)
-        {
-            try
-            {
-                var result = await _geminiService.SendText(request.Question);
-                return Ok(result);
-            } catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        // Doesn't work - Could be reworked with a python service
-        [HttpPost("upload-pdf")]
+        [HttpPost("upload-file")]
         public async Task<IActionResult> UploadPdf(IFormFile file)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("No file uploaded.");
+            // STEP 1: Initiate upload session
+            var startRequest = new HttpRequestMessage(HttpMethod.Post, ApiUploadUrl);
+            startRequest.Headers.Add("X-Goog-Upload-Protocol", "resumable");
+            startRequest.Headers.Add("X-Goog-Upload-Command", "start");
+            startRequest.Headers.Add("X-Goog-Upload-Header-Content-Type", "application/pdf");
+            startRequest.Content = new StringContent(
+                JsonSerializer.Serialize(new
+                {
+                    file = new { display_name = file.FileName }
+                }), Encoding.UTF8, "application/json");
 
-            if (!file.ContentType.Equals("application/pdf") ||
-                !Path.GetExtension(file.FileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
-                return BadRequest("Only PDF files are allowed.");
+            var startResponse = await _httpClient.SendAsync(startRequest);
+            if (!startResponse.IsSuccessStatusCode)
+                return BadRequest("Failed to initiate upload.");
 
-            try
+            var uploadUrl = startResponse.Headers.GetValues("X-Goog-Upload-URL").FirstOrDefault();
+            if (uploadUrl == null)
+                return BadRequest("Upload URL missing in response.");
+
+            // STEP 2: Upload the actual file content
+            using var fileStream = file.OpenReadStream();
+
+            var uploadRequest = new HttpRequestMessage(HttpMethod.Put, uploadUrl);
+            uploadRequest.Headers.Add("X-Goog-Upload-Offset", "0");
+            uploadRequest.Headers.Add("X-Goog-Upload-Command", "upload, finalize");
+            uploadRequest.Content = new StreamContent(fileStream);
+            uploadRequest.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+
+            var uploadResponse = await _httpClient.SendAsync(uploadRequest);
+            var resultContent = await uploadResponse.Content.ReadAsStringAsync();
+
+
+            if (!uploadResponse.IsSuccessStatusCode)
+                return BadRequest($"Upload failed: {resultContent}");
+
+            var fileData = JsonSerializer.Deserialize<GeminiUploadResponse>(resultContent);
+
+            if (fileData?.file?.uri == null)
+                return BadRequest("Failed to retrieve uploaded file URI.");
+
+            fileUri = fileData.file.uri;
+
+            return Ok(new
             {
-                using var formData = new MultipartFormDataContent();
-
-
-                // 1. Add metadata
-                var metadataObj = new
-                {
-                    displayName = file.FileName,
-                    mimeType = "application/pdf"
-                };
-                var metadataJson = JsonSerializer.Serialize(metadataObj);
-
-                var metadataContent = new StringContent(metadataJson, Encoding.UTF8, "application/json");
-                metadataContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                {
-                    Name = "\"metadata\""
-                };
-                formData.Add(metadataContent);
-
-                // 2. Add file
-                using var fileStream = file.OpenReadStream();
-                var fileContent = new StreamContent(fileStream);
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
-                fileContent.Headers.ContentDisposition =
-                    new ContentDispositionHeaderValue("form-data")
-                {
-                        Name = "\"file\"",
-                        FileName = "\"" + file.FileName + "\""
-                    };
-                formData.Add(fileContent);
-
-                // 3. Upload to Gemini
-                var response = await _httpClient.PostAsync(ApiUploadUrl, formData);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Gemini API Error {errorContent}");
-                    return StatusCode((int)response.StatusCode, errorContent); // Return actual error
-                }
-
-                // 4. Parse response
-                var responseJson = await response.Content.ReadAsStringAsync();
-                var result = JsonSerializer.Deserialize<UploadResponse>(responseJson);
-
-                if (result?.File?.Name == null)
-                    return StatusCode(500, "Upload succeeded but no file ID was returned.");
-
-                return Ok(new { fileId = result.File.Name });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("PDF Upload failed! ---- " + ex);
-                return StatusCode(500, "Internal server error");
-            }
+                uri = fileUri,
+                name = fileData.file.name,
+                displayName = fileData.file.displayName
+            });
         }
 
         [HttpPost("analyze-file")]
-        public async Task<IActionResult> AnalyzeFile([FromBody] AnalyzeRequest request)
+        public async Task<IActionResult> AnalyzeFile([FromBody] AnalyzeRequest aReq) 
         {
-            if (string.IsNullOrEmpty(request.FileId)) // Changed from FileName to FileId
+            string text = aReq.text;
+            var req = GetAnalysisRequest(text);
+            var analyzeRequest = new HttpRequestMessage(HttpMethod.Post, ApiQuestionUrl)
             {
-                return BadRequest("File ID is required.");
-            }
+                Content = new StringContent(req.ToString(), Encoding.UTF8, "application/json")
+            };
 
-            try
+            var response = await _httpClient.SendAsync(analyzeRequest);
+
+            if (response.IsSuccessStatusCode)
             {
-                // Gemini expects the file reference in a specific format
-                var requestBody = new
-                {
-                    contents = new[]
-                    {
-                new
-                {
-                    parts = new object[]
-                    {
-                        new { text = "Analyze this document and provide key insights." }, // Prompt
-                        new {
-                            fileData = new  // Changed from file_data to fileData
-                            {
-                                mimeType = "application/pdf",
-                                fileUri = request.FileId // Should be in format "files/your-file-id"
-                            }
-                        }
-                    }
-                }
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return Ok(responseContent);
             }
-                };
 
-                var jsonContent = new StringContent(
-                    JsonSerializer.Serialize(requestBody, new JsonSerializerOptions
-                    {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                    }),
-                    Encoding.UTF8,
-                    "application/json");
+            return StatusCode((int)response.StatusCode, "Request failed");
 
-                var response = await _httpClient.PostAsync(ApiQuestionUrl, jsonContent);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    return StatusCode((int)response.StatusCode, errorContent);
-                }
-
-                var responseString = await response.Content.ReadAsStringAsync();
-                return Ok(responseString);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Internal server error");
-            }
         }
 
-        public class AnalyzeRequest
+        public object GetAnalysisRequest(string text)
         {
-            public string FileId { get; set; }
+            return new JObject(
+            new JProperty("contents", new JArray(
+                new JObject(
+                    new JProperty("parts", new JArray(
+                        new JObject(new JProperty("text", text)),
+                        new JObject(
+                            new JProperty("file_data", new JObject(
+                                new JProperty("mime_type", "application/pdf"),
+                                new JProperty("file_uri", fileUri)
+                            ))
+                        )
+                    ))
+                )
+            ))
+        );
         }
+    }
 
-        public class AIRequest
-        {
-            public string Question { get; set; }
-        }
+    public class UploadRequest
+    {
+        public DisplayName file { get; set; }
+    }
 
-        public class UploadResponse
-        {
-            public FileObject File { get; set; }
-        }
+    public class DisplayName
+    {
+        [System.Text.Json.Serialization.JsonPropertyName("display_name")]
+        public string display_name { get; set; }
+    }
 
-        public class FileObject
-        {
-            public string Name { get; set; }  // "files/abc123"
-        }
+    public class GeminiUploadResponse
+    {
+        public GeminiFile file { get; set; }
+    }
+
+    public class GeminiFile
+    {
+        public string name { get; set; }
+        public string displayName { get; set; }
+        public string mimeType { get; set; }
+        public string uri { get; set; }
+    }
+
+    public class AnalyzeRequest
+    {
+        public string text { get; set; }
     }
 }
