@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Professor Chat";
+}
+
+<div class="container py-5">
+    <h1 class="text-center mb-4 fw-bold" style="color: #ff6200;">Professor Chat</h1>
+
+    <div id="chat-container" class="border rounded shadow-sm p-3 bg-white overflow-auto mb-4 d-flex flex-column gap-3" style="height: 400px;">
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="question-input" class="form-control" placeholder="Ask your professor a question..." />
+        <button id="send-button" class="btn" style="background-color: #ff6200; color: white;">Send</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<script>
+    const chatContainer = document.getElementById('chat-container');
+    const questionInput = document.getElementById('question-input');
+    const sendButton = document.getElementById('send-button');
+
+    let loadingBubble = null;
+
+    function addMessage(sender, message, isHTML = true) {
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('d-flex', sender === 'You' ? 'justify-content-end' : 'justify-content-start');
+
+        const bubble = document.createElement('div');
+        bubble.classList.add('p-3', 'rounded', 'border', 'text-dark', 'bg-light', 'mw-75');
+        bubble.innerHTML = isHTML ? marked.parse(message) : message;
+
+        const label = document.createElement('small');
+        label.classList.add('d-block', 'text-muted', 'mb-1');
+        label.textContent = sender;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.appendChild(label);
+        messageDiv.appendChild(bubble);
+
+        wrapper.appendChild(messageDiv);
+        chatContainer.appendChild(wrapper);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        return wrapper;
+    }
+
+    function showLoadingBubble() {
+        loadingBubble = document.createElement('div');
+        loadingBubble.classList.add('d-flex', 'justify-content-start');
+        loadingBubble.innerHTML = `
+            <div>
+                <small class="d-block text-muted mb-1">Professor</small>
+                <div class="typing-bubble">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+        `;
+        chatContainer.appendChild(loadingBubble);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function removeLoadingBubble() {
+        if (loadingBubble) {
+            chatContainer.removeChild(loadingBubble);
+            loadingBubble = null;
+        }
+    }
+
+    async function sendQuestion(question) {
+        showLoadingBubble();
+        try {
+            const response = await fetch('/chat/ask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question })
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            removeLoadingBubble();
+            addMessage('Professor', data.response);
+        } catch (error) {
+            removeLoadingBubble();
+            addMessage('Professor', '⚠️ Something went wrong. Please refresh the page and try again.', false);
+            console.error(error);
+        }
+    }
+
+    sendButton.addEventListener('click', () => {
+        const question = questionInput.value.trim();
+        if (question !== '') {
+            addMessage('You', question);
+            questionInput.value = '';
+            sendQuestion(question);
+        }
+    });
+
+    questionInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') sendButton.click();
+    });
+</script>
+
+<style>
+    .typing-bubble {
+        display: inline-flex;
+        gap: 0.4rem;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        max-width: 75%;
+        align-items: center;
+    }
+
+    .dot {
+        width: 8px;
+        height: 8px;
+        background-color: #999;
+        border-radius: 50%;
+        animation: blink 1.4s infinite both;
+    }
+
+    .dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @@keyframes blink {
+        0%, 80%, 100% {
+            opacity: 0;
+        }
+        40% {
+            opacity: 1;
+        }
+    }
+</style>

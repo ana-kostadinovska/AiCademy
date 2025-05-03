@@ -15,6 +15,7 @@ namespace AiCademy.Service.Implementation
         private string ApiKey;
         private string ApiQuestionUrl;
         private string ApiUploadUrl;
+        private readonly string _professorPersonaPrompt = "You are a knowledgeable and helpful professor. Please answer questions thoroughly, explain concepts clearly, stay within the context of the current educational topic, and avoid irritability or responding to non-educational prompts.";
 
         public GeminiServiceImpl(HttpClient httpClient)
         {
@@ -27,6 +28,8 @@ namespace AiCademy.Service.Implementation
 
         public async Task<string> SendText(string Question)
         {
+            string fullPrompt = $"{_professorPersonaPrompt}\n\n{Question}";
+
             var requestBody = new
             {
                 contents = new[]
@@ -35,7 +38,7 @@ namespace AiCademy.Service.Implementation
                     {
                         parts = new[]
                         {
-                            new { text = Question }
+                            new { text = fullPrompt }
                         }
                     }
                 }
@@ -46,22 +49,30 @@ namespace AiCademy.Service.Implementation
             var response = await _httpClient.PostAsync(ApiQuestionUrl, content);
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception("Error calling AI API");
+                throw new Exception($"Error calling AI API: {response.StatusCode} - {await response.Content.ReadAsStringAsync()}");
             }
 
             var responseString = await response.Content.ReadAsStringAsync();
 
-            using var doc = JsonDocument.Parse(responseString);
-            var root = doc.RootElement;
+            try
+            {
+                using var doc = JsonDocument.Parse(responseString);
+                var root = doc.RootElement;
 
-            var firstText = root
-                .GetProperty("candidates")[0]
-                .GetProperty("content")
-                .GetProperty("parts")[0]
-                .GetProperty("text")
-                .GetString();
+                var firstText = root
+                    .GetProperty("candidates")[0]
+                    .GetProperty("content")
+                    .GetProperty("parts")[0]
+                    .GetProperty("text")
+                    .GetString();
 
-            return firstText ?? string.Empty;
+                return firstText ?? string.Empty;
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"Error parsing JSON response: {ex.Message} - Response: {responseString}");
+                return string.Empty;
+            }
         }
     }
 }
