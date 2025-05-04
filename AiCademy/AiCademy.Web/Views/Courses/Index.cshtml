@@ -7,6 +7,21 @@
 
 <h1>Courses</h1>
 
+<br />
+
+<form asp-controller="Courses" asp-action="Index" method="get" class="mb-3">
+    <div class="input-group" style="max-width: 550px;">
+        <input type="text" name="searchString" class="form-control" placeholder="Search course by title..." value="@(Context.Request.Query["searchString"])" />
+        <div class="input-group-append">
+            <button type="submit" class="btn btn-primary" style="margin-left: 4px">Search</button>
+            <a asp-action="Index" class="btn btn-secondary ml-2">Clear</a>
+        </div>
+    </div>
+</form>
+
+
+<br />
+
 <div class="container">
     <div class="m-3">
         <a class="btn btn-success" asp-controller="Courses" asp-action="Create">Create new course</a>
