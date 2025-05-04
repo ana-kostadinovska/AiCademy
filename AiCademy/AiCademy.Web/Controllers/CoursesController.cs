@@ -238,7 +238,7 @@ namespace AiCademy.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLesson(Guid courseId, [Bind("Title")] Lesson lesson, IFormFile LessonFile)
+        public async Task<IActionResult> AddLesson(Guid courseId, [Bind("Title,VideoUrl")] Lesson lesson, IFormFile LessonFile)
         {
             if (ModelState.IsValid)
             {
@@ -292,7 +292,7 @@ namespace AiCademy.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditLesson(Guid id, [Bind("Id,Title,PresentationUrl,CourseId")] Lesson lesson, IFormFile LessonFile)
+        public async Task<IActionResult> EditLesson(Guid id, [Bind("Id,Title,VideoUrl,PresentationUrl,CourseId")] Lesson lesson, IFormFile LessonFile)
         {
             if (id != lesson.Id)
             {

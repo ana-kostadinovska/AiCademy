@@ -46,5 +46,26 @@
         <small class="form-text text-muted">Leave this blank if you don't want to change the file.</small>
     </div>
 
+    <div class="form-group">
+        <label for="VideoUrl">Current Video URL</label>
+        @if (!string.IsNullOrEmpty(Model.VideoUrl))
+        {
+            <p>
+                <a href="@Model.VideoUrl" target="_blank">View Current Video</a>
+            </p>
+        }
+        else
+        {
+            <p>No video URL provided.</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="VideoUrl">Update Video URL</label>
+        <input type="url" name="VideoUrl" class="form-control" value="@Model.VideoUrl" />
+        <small class="form-text text-muted">Leave this blank if you don't want to update the video URL.</small>
+    </div>
+
     <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-secondary">Back to Course</a>
 </form>
