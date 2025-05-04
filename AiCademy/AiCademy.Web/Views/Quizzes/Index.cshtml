@@ -1,0 +1,137 @@
+﻿@{
+    ViewData["Title"] = "Quizzes";
+}
+
+<div class="container py-5">
+    <h1 class="text-center mb-4 fw-bold" style="color: #ff6200;">Quiz Generator</h1>
+
+    <div id="upload-area" class="border border-2 border-dashed rounded p-5 text-center bg-light mb-4"
+         style="cursor: pointer;">
+        <input type="file" id="file-input" class="d-none" accept="application/pdf" />
+        <p class="mb-0 text-muted">📄 Drag & drop your PDF here, or click to select a file</p>
+    </div>
+
+    <div id="file-info" class="text-center mb-3 text-success fw-semibold" style="display: none;"></div>
+
+    <div class="text-center">
+        <button id="generate-button" class="btn btn-lg" style="background-color: #ff6200; color: white;" disabled>
+            Generate Quizlet
+        </button>
+    </div>
+
+    <div id="quizlet-output" class="mt-5 d-flex flex-column gap-3"></div>
+</div>
+
+<script>
+    const uploadArea = document.getElementById("upload-area");
+    const fileInput = document.getElementById("file-input");
+    const fileInfo = document.getElementById("file-info");
+    const generateButton = document.getElementById("generate-button");
+    const quizletOutput = document.getElementById("quizlet-output");
+
+    let uploadedFileUri = null;
+
+    uploadArea.addEventListener("click", () => fileInput.click());
+    uploadArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadArea.classList.add("bg-warning-subtle");
+    });
+    uploadArea.addEventListener("dragleave", () => {
+        uploadArea.classList.remove("bg-warning-subtle");
+    });
+    uploadArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove("bg-warning-subtle");
+        if (e.dataTransfer.files.length > 0) {
+            handleFileUpload(e.dataTransfer.files[0]);
+        }
+    });
+
+    fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+            handleFileUpload(fileInput.files[0]);
+        }
+    });
+
+    async function handleFileUpload(file) {
+        if (file.type !== "application/pdf") {
+            alert("Only PDF files are supported.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fileInfo.textContent = "Uploading...";
+        fileInfo.style.display = "block";
+
+        try {
+            const res = await fetch("/upload-file", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!res.ok) throw new Error("Upload failed");
+
+            const data = await res.json();
+            console.log(data);
+            uploadedFileUri = data.uri;
+
+            fileInfo.textContent = `✅ Uploaded: ${data.displayName}`;
+            generateButton.disabled = false;
+        } catch (err) {
+            fileInfo.textContent = "❌ Failed to upload file.";
+            generateButton.disabled = true;
+            console.error(err);
+        }
+    }
+
+    generateButton.addEventListener("click", async () => {
+        if (!uploadedFileUri) return;
+
+        generateButton.disabled = true;
+        generateButton.textContent = "Generating...";
+
+        try {
+            const res = await fetch("/analyze-file", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ fileUri: uploadedFileUri, text: "generate quiz" })
+            });
+
+            if (!res.ok) throw new Error("Quiz generation failed");
+
+            const data = await res.json();
+            displayQuiz(data.text);
+        } catch (err) {
+            quizletOutput.innerHTML = `<div class="alert alert-danger">❌ Failed to generate quizlet.</div>`;
+            console.error(err);
+        }
+
+        generateButton.textContent = "Generate Quizlet";
+        generateButton.disabled = false;
+    });
+
+    function displayQuiz(text) {
+        quizletOutput.innerHTML = "";
+        const questions = text.split("Question:").filter(q => q.trim() !== "");
+
+        questions.forEach((q, idx) => {
+            const lines = q.trim().split('\n');
+            const questionText = lines[0];
+            const options = lines.slice(1).map(opt => `<li>${opt.trim()}</li>`).join("");
+
+            const card = document.createElement("div");
+            card.classList.add("border", "rounded", "p-3", "bg-white", "shadow-sm");
+
+            card.innerHTML = `
+                    <h5 class="fw-bold mb-2">Question ${idx + 1}</h5>
+                    <p>${questionText}</p>
+                    <ul class="list-unstyled ms-3">${options}</ul>
+                `;
+
+            quizletOutput.appendChild(card);
+        });
+    }
+</script>
+
