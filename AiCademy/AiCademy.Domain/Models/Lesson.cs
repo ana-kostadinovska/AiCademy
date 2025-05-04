@@ -5,8 +5,8 @@ namespace AiCademy.Domain.Models
 {
     public class Lesson : BaseEntity
     {
-        public string Title { get; set; }
-        public string Content { get; set; }
+        public string? Title { get; set; }
+        public string? Content { get; set; }
 
         // Мултимедијални елементи
         public string? PresentationUrl { get; set; }
@@ -14,14 +14,14 @@ namespace AiCademy.Domain.Models
         public string? ImageUrl { get; set; }
 
         // Релации
-        public Guid CourseId { get; set; }
-        public virtual Course Course { get; set; }
+        public Guid? CourseId { get; set; }
+        public virtual Course? Course { get; set; }
 
         // Метаподатоци
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
 
         // Статус на лекцијата
-        public bool IsPublished { get; set; } = false;
+        public bool? IsPublished { get; set; } = false;
     }
 }

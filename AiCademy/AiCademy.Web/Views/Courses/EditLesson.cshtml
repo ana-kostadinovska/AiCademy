@@ -2,8 +2,11 @@
 
 <h2>Edit Lesson</h2>
 <form asp-action="EditLesson" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="CourseId" />
+    <input type="hidden" asp-for="PresentationUrl" />
 
     <div class="form-group">
         <label asp-for="Title"></label>

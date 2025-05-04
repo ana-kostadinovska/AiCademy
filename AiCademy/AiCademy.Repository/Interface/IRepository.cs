@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,5 +16,6 @@ namespace AiCademy.Repository.Interface
         List<T> InsertMany(List<T> entities);
         T Update(T entity);
         T Delete(T entity);
+        IQueryable<T> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties);
     }
 }

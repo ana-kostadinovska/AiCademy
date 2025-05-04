@@ -61,7 +61,7 @@ namespace AiCademy.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,CourseId")] Lesson lesson, IFormFile LessonFile)
+        public async Task<IActionResult> Create([Bind("Title,CourseId")] Lesson lesson, IFormFile LessonFile)
         {
             if (ModelState.IsValid)
             {

@@ -49,7 +49,9 @@ namespace AiCademy.Service.Implementation
 
         public Course GetCourseById(Guid? id)
         {
-            return _courseRepository.Get(id);
+            return _courseRepository
+                .GetAllIncluding(c => c.Lessons)
+                .FirstOrDefault(c => c.Id == id);
         }
 
         public List<Course> GetCourses()

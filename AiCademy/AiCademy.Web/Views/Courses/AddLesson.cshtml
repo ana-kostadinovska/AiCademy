@@ -7,9 +7,14 @@
         <label asp-for="Title"></label>
         <input asp-for="Title" class="form-control" />
     </div>
-    <div class="form-group">
+    @* <div class="form-group">
         <label asp-for="PresentationUrl"></label>
         <input type="text" name="LessonUrl" class="form-control" />
+    </div> *@
+    <div class="form-group">
+        <label asp-for="PresentationUrl" class="control-label"></label>
+        <input type="file" name="LessonFile" class="form-control" />
+        <span asp-validation-for="PresentationUrl" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-success">Add</button>
 </form>
