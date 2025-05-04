@@ -23,7 +23,6 @@ namespace AiCademy.Web.Controllers.REST
         private string ApiKey;
         private string ApiUploadUrl;
         private string ApiQuestionUrl;
-        private string fileUri;
 
         public AIController(HttpClient httpClient, IGeminiService geminiService)
         {
@@ -33,7 +32,6 @@ namespace AiCademy.Web.Controllers.REST
             ApiUploadUrl = Env.GetString("gemini_api_file_url") + "?key=" + ApiKey;
             ApiQuestionUrl = Env.GetString("gemini_api_question_url") + ApiKey;
             _geminiService = geminiService;
-            fileUri = "";
         }
 
         [HttpPost("upload-file")]
@@ -79,21 +77,22 @@ namespace AiCademy.Web.Controllers.REST
             if (fileData?.file?.uri == null)
                 return BadRequest("Failed to retrieve uploaded file URI.");
 
-            fileUri = fileData.file.uri;
 
             return Ok(new
             {
-                uri = fileUri,
+                uri = fileData.file.uri,
                 name = fileData.file.name,
                 displayName = fileData.file.displayName
             });
         }
 
         [HttpPost("analyze-file")]
-        public async Task<IActionResult> AnalyzeFile([FromBody] AnalyzeRequest aReq) 
+        public async Task<IActionResult> AnalyzeFile([FromBody] AnalyzeRequest incomingRequest) 
         {
-            string text = aReq.text;
-            var req = GetAnalysisRequest(text);
+            string text = incomingRequest.text;
+            string fileUri = incomingRequest.fileUri;
+
+            var req = GetAnalysisRequest(text, fileUri);
             var analyzeRequest = new HttpRequestMessage(HttpMethod.Post, ApiQuestionUrl)
             {
                 Content = new StringContent(req.ToString(), Encoding.UTF8, "application/json")
@@ -103,15 +102,22 @@ namespace AiCademy.Web.Controllers.REST
 
             if (response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                return Ok(responseContent);
+                var json = await response.Content.ReadAsStringAsync();
+                var jObj = JObject.Parse(json);
+
+                var summaryText = jObj["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
+
+                return Ok(new
+                {
+                    text = summaryText,
+                });
             }
 
             return StatusCode((int)response.StatusCode, "Request failed");
 
         }
 
-        public object GetAnalysisRequest(string text)
+        public object GetAnalysisRequest(string text, string fileUri)
         {
             return new JObject(
             new JProperty("contents", new JArray(
@@ -158,5 +164,7 @@ namespace AiCademy.Web.Controllers.REST
     public class AnalyzeRequest
     {
         public string text { get; set; }
+        public string fileUri { get; set; }
     }
+
 }
