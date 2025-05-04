@@ -114,24 +114,119 @@
 
     function displayQuiz(text) {
         quizletOutput.innerHTML = "";
+
+        text = text.trim();
+        const firstQuestionIndex = text.indexOf("Question:");
+        if (firstQuestionIndex > 0) {
+            text = text.substring(firstQuestionIndex);
+        }
+
         const questions = text.split("Question:").filter(q => q.trim() !== "");
+        let totalQuestions = questions.length;
+        let answeredCount = 0;
+        let correctCount = 0;
+
+        const resultContainer = document.createElement("div");
+        resultContainer.classList.add("mt-5", "text-center");
+        quizletOutput.appendChild(resultContainer);
 
         questions.forEach((q, idx) => {
-            const lines = q.trim().split('\n');
+            const lines = q.trim().split('\n').filter(line => line.trim() !== "");
             const questionText = lines[0];
-            const options = lines.slice(1).map(opt => `<li>${opt.trim()}</li>`).join("");
+            const options = lines.slice(1).map(opt => opt.trim());
+
+            const correctOption = options.find(opt => opt.startsWith("Correct:"));
+            const correctText = correctOption?.replace("Correct:", "").trim();
 
             const card = document.createElement("div");
-            card.classList.add("border", "rounded", "p-3", "bg-white", "shadow-sm");
+            card.classList.add("border", "rounded", "p-4", "bg-white", "shadow");
 
             card.innerHTML = `
-                    <h5 class="fw-bold mb-2">Question ${idx + 1}</h5>
-                    <p>${questionText}</p>
-                    <ul class="list-unstyled ms-3">${options}</ul>
-                `;
+                <h5 class="fw-bold mb-3">Question ${idx + 1}</h5>
+                <p class="mb-3">${questionText}</p>
+                <div class="answers d-flex flex-column gap-2 mb-3">
+                    ${options.map((opt) => {
+                const isCorrect = opt.startsWith("Correct:");
+                const display = isCorrect ? opt.replace("Correct:", "").trim() : opt;
+                return `<button type="button" class="btn btn-outline-dark option" data-answer="${display}">${display}</button>`;
+            }).join("")}
+                </div>
+                <button class="btn btn-warning check-answer">Check</button>
+            `;
 
-            quizletOutput.appendChild(card);
+            const optionsBtns = card.querySelectorAll(".option");
+            let selectedBtn = null;
+
+            optionsBtns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    optionsBtns.forEach(b => b.classList.remove("active", "btn-success", "btn-danger", "btn-warning"));
+                    btn.classList.add("active");
+                    selectedBtn = btn;
+                });
+            });
+
+            const checkBtn = card.querySelector(".check-answer");
+            checkBtn.addEventListener("click", () => {
+                if (!selectedBtn) {
+                    alert("Please select an answer first.");
+                    return;
+                }
+
+                optionsBtns.forEach(b => b.disabled = true);
+                checkBtn.disabled = true;
+
+                const selectedAnswer = selectedBtn.getAttribute("data-answer");
+
+                if (selectedAnswer === correctText) {
+                    selectedBtn.classList.remove("btn-outline-dark");
+                    selectedBtn.classList.add("btn-success");
+                    correctCount++;
+                } else {
+                    selectedBtn.classList.remove("btn-outline-dark");
+                    selectedBtn.classList.add("btn-danger");
+
+                    const correctBtn = [...optionsBtns].find(b => b.getAttribute("data-answer") === correctText);
+                    if (correctBtn) {
+                        correctBtn.classList.remove("btn-outline-dark");
+                        correctBtn.classList.add("btn-warning");
+                    }
+                }
+
+                answeredCount++;
+                if (answeredCount === totalQuestions) {
+                    showResult(correctCount, totalQuestions, resultContainer);
+                }
+            });
+
+            quizletOutput.insertBefore(card, resultContainer);
         });
     }
+    function showResult(correct, total, container) {
+        const percent = Math.round((correct / total) * 100);
+        let message = "";
+
+        if (percent <= 20) {
+            message = "📘 You should study more on this topic.";
+        } else if (percent <= 40) {
+            message = "📙 Keep practicing, you're getting there.";
+        } else if (percent <= 60) {
+            message = "📗 Decent effort! A bit more revision will help.";
+        } else if (percent <= 80) {
+            message = "🎯 You're doing well on this topic!";
+        } else {
+            message = "🏆 Bravo! You’ve mastered this topic.";
+        }
+
+        container.innerHTML = `
+            <div class="mt-4">
+                <h4 class="fw-bold">${correct}/${total} questions answered correctly</h4>
+                <div class="progress my-3" style="height: 25px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: ${percent}%" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">${percent}%</div>
+                </div>
+                <p class="fs-5">${message}</p>
+            </div>
+        `;
+    }
+
 </script>
 

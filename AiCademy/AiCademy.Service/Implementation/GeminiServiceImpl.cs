@@ -16,7 +16,15 @@ namespace AiCademy.Service.Implementation
         private string ApiUploadUrl;
         private string ApiQuestionUrl;
         private readonly string _professorPersonaPrompt = "You are a knowledgeable and helpful professor. Please answer questions thoroughly, explain concepts clearly, stay within the context of the current educational topic, and avoid irritability or responding to non-educational prompts.";
-        private readonly string _quizzesPrompt = "You are an expert quiz creator. Based on the uploaded file, generate a series of multiple-choice questions. For each question, provide four distinct answer choices. Clearly mark the correct answer with \"Correct: \" before it.\r\n\r\n---\r\n\r\nExample Question Format:\r\nQuestion: [Generated question based on the text]\r\nA) [Plausible but incorrect answer]\r\nB) [Plausible but incorrect answer]\r\nCorrect: C) [Correct answer extracted from the text]\r\nD) [Plausible but incorrect answer]";
+        private readonly string _quizzesPrompt = "You are an expert quiz creator. Based on the uploaded file, generate 10 multiple-choice questions. " +
+            "For each question, provide four distinct answer choices. " +
+            "Output Format Requirements:" +
+            "\r\n- Do NOT include any introduction, explanation, or comments." +
+            "\r\n- Each question must start with \"Question:\" followed by the question text." +
+            "\r\n- Each answer option must be on a separate line." +
+            "\r\n- Exactly one option should be prefixed with \"Correct: \"." +
+            "\r\n- Do NOT include any extra formatting, headings, or numbering outside this structure." +
+            "Clearly mark the correct answer with \"Correct: \" before it.\r\n\r\n---\r\n\r\nExample Question Format:\r\nQuestion: [Generated question based on the text]\r\nA) [Plausible but incorrect answer]\r\nB) [Plausible but incorrect answer]\r\nCorrect: C) [Correct answer extracted from the text]\r\nD) [Plausible but incorrect answer] ";
 
         public GeminiServiceImpl(HttpClient httpClient)
         {
