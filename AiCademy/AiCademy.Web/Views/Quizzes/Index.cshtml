@@ -125,6 +125,7 @@
         let totalQuestions = questions.length;
         let answeredCount = 0;
         let correctCount = 0;
+        const results = [];
 
         const resultContainer = document.createElement("div");
         resultContainer.classList.add("mt-5", "text-center");
@@ -193,15 +194,22 @@
                 }
 
                 answeredCount++;
+                results.push({
+                    question: questionText,
+                    userAnswer: selectedAnswer,
+                    correctAnswer: correctText,
+                    points: selectedAnswer === correctText ? 1 : 0
+                });
+
                 if (answeredCount === totalQuestions) {
-                    showResult(correctCount, totalQuestions, resultContainer);
+                    showResult(correctCount, totalQuestions, resultContainer, results);
                 }
             });
 
             quizletOutput.insertBefore(card, resultContainer);
         });
     }
-    function showResult(correct, total, container) {
+    function showResult(correct, total, container, results) {
         const percent = Math.round((correct / total) * 100);
         let message = "";
 
@@ -225,8 +233,38 @@
                 </div>
                 <p class="fs-5">${message}</p>
             </div>
-        `;
-    }
+            <div class="text-center mt-3">
+                <button id="export-button" class="btn btn-success" style="display:none;">
+                    Export Results to Excel
+                </button>
+            </div>
 
+        `;
+
+        document.getElementById("export-button").style.display = "inline-block";
+        document.getElementById("export-button").addEventListener("click", async () => {
+            try {
+                const res = await fetch("/export-results", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ answers: results })
+                });
+
+                if (!res.ok) throw new Error("Failed to export");
+
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "QuizResults.xlsx";
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                alert("❌ Failed to export results.");
+                console.error(err);
+            }
+        });
+
+    }
 </script>
 
