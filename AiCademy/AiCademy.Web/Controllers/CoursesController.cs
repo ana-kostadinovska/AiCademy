@@ -57,6 +57,7 @@ namespace AiCademy.Web.Controllers
 
             var user = await _context.Users
                 .Include(u => u.EnrolledCourses)
+                .ThenInclude(c => c.Course)
                 .FirstOrDefaultAsync(u => u.Id == userId);
             //OLD:
             //var user = await _context.Users
