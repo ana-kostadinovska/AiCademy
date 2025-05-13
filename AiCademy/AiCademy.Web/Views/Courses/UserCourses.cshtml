@@ -1,4 +1,4 @@
-﻿@model List<AiCademy.Domain.Models.Course>
+﻿@model List<AiCademy.Domain.Models.EnrolledCourse>
 
 @{
     ViewData["Title"] = "Index";
@@ -21,13 +21,13 @@
             <div class="card" style="width: 18rem; height: 35rem">
                 <img class="card-img-top" src="#" alt="Card image cap">
                 <div class="card-body">
-                    <h5 class="card-title">@item.Title</h5>
-                    <p class="card-text">@item.Description</p>
-                    <h6>Duration: @item.Duration</h6>
+                    <h5 class="card-title">@item.Course.Title</h5>
+                    <p class="card-text">@item.Course.Description</p>
+                    <h6>Duration: @item.Course.Duration</h6>
                 </div>
                 <div class="card-footer">
                    <td> 
-                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>  
+                 <a asp-action="Details" asp-route-id="@item.Course.Id" class="btn btn-info">Details</a>  
                
    
              </td> 
