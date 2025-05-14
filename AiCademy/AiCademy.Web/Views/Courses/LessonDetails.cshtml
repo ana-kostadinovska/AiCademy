@@ -1,4 +1,12 @@
-﻿@model AiCademy.Domain.Models.Lesson
+﻿@using AiCademy.Domain.Enums
+@using AiCademy.Domain.Identity
+@using Microsoft.AspNetCore.Identity
+@model AiCademy.Domain.Models.Lesson
+
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+}
 
 <h2>Lesson Details</h2>
 <p><strong>Name:</strong> @Model.Title</p>
@@ -18,6 +26,9 @@
 }
 
 <p><strong>Course:</strong> @Model.Course?.Title</p>
-<a asp-action="EditLesson" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+@if (currentUser?.UserType == UserType.Instructor)
+{
+    <a asp-action="EditLesson" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+}
 <a asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-secondary">Back to Course</a>
 

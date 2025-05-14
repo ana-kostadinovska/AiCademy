@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using AiCademy.Domain.Models;
+using AiCademy.Domain.Enums;
 
 namespace AiCademy.Web.Areas.Identity.Pages.Account
 {
@@ -102,6 +103,7 @@ namespace AiCademy.Web.Areas.Identity.Pages.Account
 
             public string FirstName { get; set; }
             public string LastName { get; set; }
+            public UserType UserType { get; set; }
         }
 
 
@@ -128,6 +130,7 @@ namespace AiCademy.Web.Areas.Identity.Pages.Account
 
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
+                user.UserType = Input.UserType;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -135,6 +138,8 @@ namespace AiCademy.Web.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    //var roleName = user.UserType.ToString();
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
