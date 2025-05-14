@@ -1,8 +1,16 @@
-﻿@model List<AiCademy.Domain.Models.Course>
+﻿@using AiCademy.Domain.Enums
+@using AiCademy.Domain.Identity
+@using Microsoft.AspNetCore.Identity
+@model List<AiCademy.Domain.Models.Course>
 
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
 }
 
 <h1>Courses</h1>
@@ -23,10 +31,15 @@
 <br />
 
 <div class="container">
-    <div class="m-3">
-        <a class="btn btn-success" asp-controller="Courses" asp-action="Create">Create new course</a>
+
+
+    @if (currentUser?.UserType == UserType.Instructor)
+    {
+        <div class="m-3">
+            <a class="btn btn-success" asp-controller="Courses" asp-action="Create">Create new course</a>
 
     </div>
+    }
 
      @for(int i=0;i<Model.Count; i++)
     {
@@ -46,10 +59,14 @@
                 </div>
                 <div class="card-footer">
                    <td> 
-                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>  
-                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>  
+                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> 
+                 
+                  @if (currentUser?.UserType == UserType.Instructor) {
+ <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>  
                  <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a> 
-                 @if (User.Identity.IsAuthenticated) 
+                  }
+                
+                 @if (User.Identity.IsAuthenticated && currentUser?.UserType == UserType.Student) 
   { 
                  <form asp-action="AddCourseToUserList" method="post"> 
                      <input type="hidden" name="id" value="@item.Id" />
