@@ -18,6 +18,7 @@ namespace AiCademy.Domain.Models
         public string Title { get; set; }
         public string Description { get; set; }
         public string Duration { get; set; }
+        public string? ImageUrl { get; set; }
 
         // Наставник (FOREIGN KEY)
         /*public Guid? InstructorId { get; set; }

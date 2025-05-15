@@ -50,8 +50,15 @@
         }
         <div class="col-3 m-4">
 
-            <div class="card" style="width: 18rem; height: 35rem">
-                <img class="card-img-top" src="#" alt="Card image cap">
+            <div class="card" style="width: 18rem; height: 25rem">
+                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    <img class="card-img-top" src="@item.ImageUrl" alt="Course image" style="height: 200px; object-fit: cover;" />
+                }
+                else
+                {
+                    <img class="card-img-top" src="https://via.placeholder.com/286x200.png?text=No+Image" alt="No image" style="height: 200px; object-fit: cover;" />
+                }
                 <div class="card-body">
                     <h5 class="card-title">@item.Title</h5>
                     <p class="card-text">@item.Description</p>

@@ -98,11 +98,21 @@ namespace AiCademy.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Duration,Id")] Course course)
+        public async Task<IActionResult> Create([Bind("Title,Description,Duration,Id")] Course course, IFormFile? ImageFile)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors);
             if (ModelState.IsValid)
             {
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await ImageFile.CopyToAsync(ms);
+                    var fileBytes = ms.ToArray();
+                    var base64 = Convert.ToBase64String(fileBytes);
+                    var fileType = ImageFile.ContentType;
+                    course.ImageUrl = $"data:{fileType};base64,{base64}";
+                }
+
                 course.Id = Guid.NewGuid();
                 _courseService.CreateNewCourse(course);
                 return RedirectToAction(nameof(Index));
@@ -131,7 +141,7 @@ namespace AiCademy.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description,Duration,Id")] Course course)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description,Duration,Id")] Course course, IFormFile? ImageFile)
         {
             if (id != course.Id)
             {
@@ -140,6 +150,16 @@ namespace AiCademy.Web.Controllers
 
             if (ModelState.IsValid)
             {
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    using var ms = new MemoryStream();
+                    await ImageFile.CopyToAsync(ms);
+                    var fileBytes = ms.ToArray();
+                    var base64 = Convert.ToBase64String(fileBytes);
+                    var fileType = ImageFile.ContentType;
+                    course.ImageUrl = $"data:{fileType};base64,{base64}";
+                }
+
                 _courseService.UpdateCourse(course);
 
                 return RedirectToAction(nameof(Index));
