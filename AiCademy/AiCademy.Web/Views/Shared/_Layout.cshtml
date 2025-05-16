@@ -43,10 +43,10 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="UserCourses">My Courses</a>
 
                         </li>}
-                            <li class="nav-item">
+                        <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Chat" asp-action="Index">AiProfessor</a>
                             </li>
-                            <li class="nav-item">
+                        <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Quizzes" asp-action="Index">AiQuizlet</a>
                             </li>
                             @* <li class="nav-item">
