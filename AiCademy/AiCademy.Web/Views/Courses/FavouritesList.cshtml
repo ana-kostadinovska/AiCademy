@@ -1,0 +1,37 @@
+﻿@model List<AiCademy.Domain.Models.Lesson>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>My Favourite Lessons</h1>
+
+<div class="container">
+
+           <table class="table">
+        <thead>
+            <tr>
+                <th>Lesson Title</th>
+                <th>Course</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lesson in Model)
+            {
+                <tr>
+                    <td>@lesson.Title</td>
+                    <td>@lesson.Course.Title</td>
+                   
+                    <td>
+                        <a asp-action="LessonDetails" asp-route-id="@lesson.Id" class="btn btn-info btn-sm">Details</a>
+                        <a asp-action="RemoveFromFavourites" asp-route-id="@lesson.Id" class="btn btn-danger btn-sm">Remove from Favourites</a>
+                    
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+     
+</div>

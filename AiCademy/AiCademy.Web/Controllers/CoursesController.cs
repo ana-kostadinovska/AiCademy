@@ -410,5 +410,72 @@ namespace AiCademy.Web.Controllers
             return NotFound();
         }
 
+        [Authorize]
+        public async Task<IActionResult> FavouritesList()
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var user = await _context.Users
+                .Include(u => u.FavouriteLessons)
+                .ThenInclude(c => c.Course)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+
+            return View(user?.FavouriteLessons.ToList() ?? []);
+           
+        }
+
+        
+
+
+        public async Task<IActionResult> AddToFavourites(Guid id)
+        {
+            var lesson = _lessonService.GetLessonById(id);
+            if (lesson == null)
+            {
+                return NotFound("Lesson not found.");
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users
+                .Include(u => u.FavouriteLessons)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.FavouriteLessons.Add(lesson);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(FavouritesList));
+
+        }
+
+        public async Task<IActionResult> RemoveFromFavourites(Guid id)
+        {
+            var lesson = _lessonService.GetLessonById(id);
+            if (lesson == null)
+            {
+                return NotFound("Lesson not found.");
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users
+                .Include(u => u.FavouriteLessons)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            user.FavouriteLessons.Remove(lesson);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(FavouritesList));
+
+        }
+
     }
 }

@@ -4,6 +4,7 @@ using AiCademy.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AiCademy.Repository.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250518123635_Favourites")]
+    partial class Favourites
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -244,6 +247,9 @@ namespace AiCademy.Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
@@ -272,6 +278,8 @@ namespace AiCademy.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("CourseId");
 
@@ -346,21 +354,6 @@ namespace AiCademy.Repository.Migrations
                     b.HasIndex("UserId1");
 
                     b.ToTable("Results");
-                });
-
-            modelBuilder.Entity("ApplicationUserLesson", b =>
-                {
-                    b.Property<Guid>("FavouriteLessonsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("FavouriteLessonsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ApplicationUserLesson");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -564,6 +557,10 @@ namespace AiCademy.Repository.Migrations
 
             modelBuilder.Entity("AiCademy.Domain.Models.Lesson", b =>
                 {
+                    b.HasOne("AiCademy.Domain.Identity.ApplicationUser", null)
+                        .WithMany("FavouriteLessons")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("AiCademy.Domain.Models.Course", "Course")
                         .WithMany("Lessons")
                         .HasForeignKey("CourseId");
@@ -608,21 +605,6 @@ namespace AiCademy.Repository.Migrations
                     b.Navigation("Quiz");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ApplicationUserLesson", b =>
-                {
-                    b.HasOne("AiCademy.Domain.Models.Lesson", null)
-                        .WithMany()
-                        .HasForeignKey("FavouriteLessonsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AiCademy.Domain.Identity.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -681,6 +663,8 @@ namespace AiCademy.Repository.Migrations
                     b.Navigation("Certificates");
 
                     b.Navigation("EnrolledCourses");
+
+                    b.Navigation("FavouriteLessons");
 
                     b.Navigation("ForumPosts");
 

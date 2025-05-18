@@ -32,4 +32,11 @@
     <ProjectReference Include="..\AiCademy.Service\AiCademy.Service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Courses\FavouritesList.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

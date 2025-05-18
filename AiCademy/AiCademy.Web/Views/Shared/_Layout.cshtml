@@ -43,6 +43,14 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="UserCourses">My Courses</a>
 
                         </li>}
+                        @if (currentUser?.UserType == UserType.Student)
+                        {
+                            <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
+
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="FavouritesList">My Favourite Lessons</a>
+
+                            </li>
+                        }
                         <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Chat" asp-action="Index">AiProfessor</a>
                             </li>
@@ -53,6 +61,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
                             </li> *@
                         </ul>
+                   
                         <div>
                             @if (SignInManager.IsSignedIn(User))
                             {
