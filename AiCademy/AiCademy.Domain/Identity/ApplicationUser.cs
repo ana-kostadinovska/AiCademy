@@ -16,6 +16,7 @@ namespace AiCademy.Domain.Identity
         public UserType UserType { get; set; }
 
         public virtual ICollection<EnrolledCourse> EnrolledCourses { get; set; }
+        public virtual ICollection<Lesson> FavouriteLessons { get; set; }
         public virtual ICollection<ForumPost> ForumPosts { get; set; }
         public virtual ICollection<Result> Results { get; set; }
         public virtual ICollection<Certificate> Certificates { get; set; }

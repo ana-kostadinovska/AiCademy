@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AiCademy.Domain.Identity;
 
 namespace AiCademy.Domain.Models
 {
@@ -23,5 +24,7 @@ namespace AiCademy.Domain.Models
 
         // Статус на лекцијата
         public bool? IsPublished { get; set; } = false;
+
+        public virtual ICollection<ApplicationUser> Users { get; set; }
     }
 }

@@ -125,6 +125,7 @@ namespace AiCademy.Web.Areas.Identity.Pages.Account
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
                 user.EnrolledCourses = [];
+                user.FavouriteLessons = [];
                 //OLD:
                 //user.UserCourses = new List<EnrolledCourse>();
 
