@@ -7,7 +7,7 @@ namespace AiCademy.Domain.Models
     public class EnrolledCourse : BaseEntity
     {
         // Релации со корисник и курс
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public virtual ApplicationUser User { get; set; }
 
         public Guid CourseId { get; set; }

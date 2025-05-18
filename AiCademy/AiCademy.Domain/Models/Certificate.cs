@@ -8,7 +8,7 @@ namespace AiCademy.Domain.Models
         public DateTime IssueDate { get; set; }
 
         // Релации
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public Guid CourseId { get; set; }
         public virtual ApplicationUser User { get; set; }
         public virtual Course Course { get; set; }

@@ -9,7 +9,7 @@ namespace AiCademy.Domain.Models
         public TimeSpan TimeTaken { get; set; }
 
         // Релации
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public Guid QuizId { get; set; }
         public virtual ApplicationUser User { get; set; }
         public virtual Quiz Quiz { get; set; }

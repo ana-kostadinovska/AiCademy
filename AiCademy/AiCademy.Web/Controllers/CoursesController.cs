@@ -231,7 +231,7 @@ namespace AiCademy.Web.Controllers
             {
                 var enrollment = new EnrolledCourse
                 {
-                    UserId = new Guid(userId!),
+                    UserId = new (userId!),
                     CourseId = id,
                     Status = CourseStatus.Active, // Set appropriate status
                     StartDate = DateTime.Now
