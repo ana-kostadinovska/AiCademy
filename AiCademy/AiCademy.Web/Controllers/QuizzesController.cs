@@ -1,17 +1,28 @@
 ﻿using AiCademy.Domain.DTOs;
+using AiCademy.Domain.Identity;
 using AiCademy.Service.Interface;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using static AiCademy.Domain.DTOs.GeminiDTOs;
 using static AiCademy.Domain.DTOs.QuizzDTOs;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using Document = QuestPDF.Fluent.Document;
 
 namespace AiCademy.Web.Controllers
 {
     public class QuizzesController : Controller
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IGeminiService _geminiService;
 
-        public QuizzesController(IGeminiService geminiService)
+        public QuizzesController(IGeminiService geminiService, UserManager<ApplicationUser> userManager)
         {
+            _userManager = userManager;
             _geminiService = geminiService;
         }
 
@@ -91,6 +102,61 @@ namespace AiCademy.Web.Controllers
             return File(stream.ToArray(),
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "QuizResults.xlsx");
+        }
+
+        [HttpPost("export-certificate")]
+        public async Task<IActionResult> ExportCertificate()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not logged in");
+
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                return NotFound("User not found");
+
+            // Create PDF document
+            byte[] pdfBytes = CreateCertificatePdf(user.FirstName, user.LastName);
+
+            return File(pdfBytes, "application/pdf", "Certificate.pdf");
+        }
+
+        private byte[] CreateCertificatePdf(string firstName, string lastName)
+        {
+            var fullName = $"{firstName} {lastName}";
+
+            var pdf = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(50);
+                    page.Size(PageSizes.A4);
+                    page.Content()
+                        .Column(col =>
+                        {
+                            col.Spacing(25);
+
+                            col.Item().AlignCenter().Text("CERTIFICATE")
+                                .FontSize(32)
+                                .Bold();
+
+                            col.Item().AlignCenter().Text($"{fullName} has successfully finished this lecture")
+                                .FontSize(18);
+                        });
+                });
+            });
+            try
+            {
+                return pdf.GeneratePdf();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PDF generation failed: {ex.Message}");
+                throw;
+            }
         }
 
     }

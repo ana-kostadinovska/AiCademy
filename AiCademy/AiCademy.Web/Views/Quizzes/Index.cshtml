@@ -23,6 +23,7 @@
 </div>
 
 <script>
+    var flag = false;
     const uploadArea = document.getElementById("upload-area");
     const fileInput = document.getElementById("file-input");
     const fileInfo = document.getElementById("file-info");
@@ -220,8 +221,10 @@
         } else if (percent <= 60) {
             message = "📗 Decent effort! A bit more revision will help.";
         } else if (percent <= 80) {
+            flag = true;
             message = "🎯 You're doing well on this topic!";
         } else {
+            flag = true;
             message = "🏆 Bravo! You’ve mastered this topic.";
         }
 
@@ -236,6 +239,9 @@
             <div class="text-center mt-3">
                 <button id="export-button" class="btn btn-success" style="display:none;">
                     Export Results to Excel
+                </button>
+                <button id="export-certificate-button" class="btn btn-success" style="display:none;">
+                    Generate Certificate
                 </button>
             </div>
 
@@ -261,6 +267,31 @@
                 window.URL.revokeObjectURL(url);
             } catch (err) {
                 alert("❌ Failed to export results.");
+                console.error(err);
+            }
+        });
+        if (flag) {
+            document.getElementById("export-certificate-button").style.display = "inline-block";
+        }
+        document.getElementById("export-certificate-button").addEventListener("click", async () => {
+            try {
+                const res = await fetch("/export-certificate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    //body: JSON.stringify({ user: userId })
+                });
+
+                if (!res.ok) throw new Error("Failed to generate");
+
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "Certificate.pdf";
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                alert("❌ Failed to export certificate.");
                 console.error(err);
             }
         });

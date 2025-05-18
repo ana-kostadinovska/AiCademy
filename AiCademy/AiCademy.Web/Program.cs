@@ -6,6 +6,7 @@ using AiCademy.Repository.Implementation;
 using AiCademy.Repository.Interface;
 using AiCademy.Service.Implementation;
 using AiCademy.Service.Interface;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,8 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddControllers();
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
