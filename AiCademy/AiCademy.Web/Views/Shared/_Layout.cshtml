@@ -1,15 +1,14 @@
-﻿@using AiCademy.Domain.Enums
+﻿<!DOCTYPE html>
+<html lang="en">
+@using AiCademy.Domain.Enums
 @using Microsoft.AspNetCore.Identity
 @using AiCademy.Domain.Identity
 @inject SignInManager<ApplicationUser> SignInManager
-
 @inject UserManager<ApplicationUser> UserManager
 @{
-    var currentUser = await UserManager.GetUserAsync(User);
+        var currentUser = await UserManager.GetUserAsync(User);
 }
 
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -20,76 +19,58 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom">
+        <nav class="navbar navbar-expand-sm border-bottom">
             <div class="container-fluid">
                 <a class="navbar-brand" style="color: #ff6200; font-weight: bold; font-size: 25px;" asp-area="" asp-controller="Home" asp-action="Index">AiCademy</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Index">Courses</a>
-                        </li>
-
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Courses" asp-action="Index">Courses</a></li>
                         @if (currentUser?.UserType == UserType.Student)
                         {
-                            <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
-
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="UserCourses">My Courses</a>
-
-                        </li>}
-                        @if (currentUser?.UserType == UserType.Student)
-                        {
-                            <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
-
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="FavouritesList">My Favourite Lessons</a>
-
-                            </li>
+                            <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Courses" asp-action="UserCourses">My Courses</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Courses" asp-action="FavouritesList">My Favourite Lessons</a></li>
                         }
-                        <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Chat" asp-action="Index">AiProfessor</a>
-                            </li>
-                        <li class="nav-item" style="@(SignInManager.IsSignedIn(User) ? "" : "display: none;")">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Quizzes" asp-action="Index">AiQuizlet</a>
-                            </li>
-                            @* <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About Us</a>
-                            </li> *@
-                        </ul>
-                   
-                        <div>
-                            @if (SignInManager.IsSignedIn(User))
-                            {
-                                <a class="btn  btn-home" asp-area="Identity" asp-page="/Account/Logout">Log Out</a>
-                            }
-                            else
-                            {
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Chat" asp-action="Index">AiProfessor</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Quizzes" asp-action="Index">AiQuizlet</a></li>
+                    </ul>
+                    <div>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <a class="btn btn-home" asp-area="Identity" asp-page="/Account/Logout">Log Out</a>
+                        }
+                        else
+                        {
                             <a class="btn btn-home" asp-area="Identity" asp-page="/Account/Login">Log In</a>
-                            }
-                        </div>
+                        }
                     </div>
                 </div>
-            </nav>
-        </header>
-        <div class="container">
-            <main role="main" class="pb-3">
-                @RenderBody()
-            </main>
-        </div>
-
-        <footer class="border-top footer text-muted">
-            <div class="container">
-                &copy; 2025 - AiCademy.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
             </div>
-        </footer>
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-        @await RenderSectionAsync("Scripts", required: false)
-    </body>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - AiCademy.Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <button id="themeToggleBtn" class="btn btn-secondary" style="position: fixed; bottom: 10px; right: 10px; z-index: 1000;">
+        Toggle Theme
+    </button>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
 </html>

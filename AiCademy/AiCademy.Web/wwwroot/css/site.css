@@ -1,26 +1,29 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
-
 
 /* Home - Index */
 .full-width {
@@ -59,17 +62,18 @@ body {
     z-index: 1;
 }
 
-.hero-content h1 {
-    font-size: 3rem;
-    font-weight: bold;
-    margin-bottom: 30px;
-}
+    .hero-content h1 {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
 
-.hero-content p {
-    font-size: 1.2rem;
-    margin: 10px 0;
-}
+    .hero-content p {
+        font-size: 1.2rem;
+        margin: 10px 0;
+    }
 
+/* Custom button - orange theme */
 .btn-home {
     background-color: #ff6200;
     border-color: #ff6200;
@@ -77,11 +81,11 @@ body {
     color: white;
 }
 
-.btn-home:hover {
-    background-color: #e65a00;
-    border-color: #e65a00;
-    color: white
-}
+    .btn-home:hover {
+        background-color: #e65a00;
+        border-color: #e65a00;
+        color: white;
+    }
 
 .section-title {
     color: #ff6200;
@@ -91,10 +95,92 @@ body {
 
 .row.text-center p {
     font-size: 1.1rem;
-    color: #333;
+    color: var(--text-color);
 }
 
 .section-divider {
     position: relative;
     border-right: 2px solid #D3D3D3;
+}
+
+/* CSS Variables */
+:root {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --nav-background: #f8f9fa;
+    --nav-text: #000000;
+    --btn-bg: #ff6200;
+    --btn-text: #ffffff;
+}
+
+body.light-mode {
+    --background-color: #ffffff;
+    --text-color: #000000;
+    --nav-background: #f8f9fa;
+    --nav-text: #000000;
+    --btn-bg: #ff6200;
+    --btn-text: #ffffff;
+}
+
+body.dark-mode {
+    --background-color: #0d1117;
+    --text-color: #c9d1d9;
+    --nav-background: #161b22;
+    --nav-text: #ffffff;
+    --btn-bg: #ff6200;
+    --btn-text: #ffffff;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.navbar,
+.footer {
+    background-color: var(--nav-background) !important;
+}
+
+    .nav-link,
+    .navbar-brand,
+    .footer a {
+        color: var(--nav-text) !important;
+    }
+
+/* Custom button style for theme toggle and other primary buttons */
+.btn-home {
+    background-color: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+    border-color: var(--btn-bg) !important;
+}
+
+    .btn-home:hover {
+        background-color: #e65a00 !important;
+        border-color: #e65a00 !important;
+        color: white !important;
+    }
+
+/* Extra fix: override btn-info to use btn-home style */
+.btn-info {
+    background-color: var(--btn-bg) !important;
+    border-color: var(--btn-bg) !important;
+    color: var(--btn-text) !important;
+}
+
+    .btn-info:hover {
+        background-color: #e65a00 !important;
+        border-color: #e65a00 !important;
+        color: white !important;
+    }
+
+/* Cards and input appearance in dark mode */
+body.dark-mode .card,
+body.dark-mode .form-control {
+    background-color: #0d1117 !important;
+    color: #c9d1d9 !important;
+    border-color: #30363d !important;
+}
+
+body.dark-mode a {
+    color: #ffffff !important;
 }
