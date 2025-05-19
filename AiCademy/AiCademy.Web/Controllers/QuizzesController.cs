@@ -127,6 +127,7 @@ namespace AiCademy.Web.Controllers
         private byte[] CreateCertificatePdf(string firstName, string lastName)
         {
             var fullName = $"{firstName} {lastName}";
+            var currentDate = DateTime.Now.ToString("MMMM dd, yyyy");
 
             var pdf = Document.Create(container =>
             {
@@ -134,20 +135,58 @@ namespace AiCademy.Web.Controllers
                 {
                     page.Margin(50);
                     page.Size(PageSizes.A4);
-                    page.Content()
-                        .Column(col =>
+                    page.Background(Colors.White);
+
+                    page.Content().Border(2).BorderColor(Colors.Grey.Medium).Padding(20).Column(col =>
+                    {
+                        col.Spacing(20);
+
+                        col.Item().AlignCenter().Text("CERTIFICATE")
+                            .FontSize(36)
+                            .Bold()
+                            .FontColor(Colors.Blue.Medium)
+                            .FontFamily("Georgia")
+                            .Underline();
+
+                        col.Item().Height(10);
+
+                        col.Item().AlignCenter().Text("This is to certify that")
+                            .FontSize(14)
+                            .Italic()
+                            .FontColor(Colors.Grey.Darken1);
+
+                        col.Item().AlignCenter().Text(fullName)
+                            .FontSize(28)
+                            .Bold()
+                            .FontColor(Colors.Black);
+
+                        col.Item().AlignCenter().Text("has successfully completed this lecture")
+                            .FontSize(16)
+                            .FontColor(Colors.Grey.Darken1);
+
+                        col.Item().Height(30);
+
+                        // Draw a horizontal line using bottom border on an empty container
+                        col.Item().PaddingBottom(5).BorderBottom(1).BorderColor(Colors.Grey.Lighten2);
+
+                        col.Item().Row(row =>
                         {
-                            col.Spacing(25);
+                            row.RelativeItem().Column(signatureCol =>
+                            {
+                                signatureCol.Item().Text("______________________").AlignCenter();
+                                signatureCol.Item().Text("Instructor Signature").FontSize(12).FontColor(Colors.Grey.Darken2).AlignCenter();
+                            });
 
-                            col.Item().AlignCenter().Text("CERTIFICATE")
-                                .FontSize(32)
-                                .Bold();
-
-                            col.Item().AlignCenter().Text($"{fullName} has successfully finished this lecture")
-                                .FontSize(18);
+                            row.RelativeItem().Column(dateCol =>
+                            {
+                                dateCol.Item().Text(currentDate).AlignCenter().FontSize(14);
+                                dateCol.Item().Text("Date").FontSize(12).FontColor(Colors.Grey.Darken2).AlignCenter();
+                            });
                         });
+                    });
                 });
             });
+
             try
             {
                 return pdf.GeneratePdf();
@@ -158,6 +197,7 @@ namespace AiCademy.Web.Controllers
                 throw;
             }
         }
+
 
     }
 }

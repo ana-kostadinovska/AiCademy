@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AiCademy", "AiCademy", "{E3F30D9D-10FB-4E20-88FA-0BF4C3B38A0A}"
+	ProjectSection(SolutionItems) = preProject
+		.env = .env
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AiCademy.Web", "AiCademy.Web\AiCademy.Web.csproj", "{5C2C7C85-319B-4EC8-97E4-CC7E6E17D107}"
 EndProject
